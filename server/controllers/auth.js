@@ -31,6 +31,7 @@ export const updateprofile = async (req, res) => {
         $set: {
           channelname: channelname,
           description: description,
+          location: req.body.location,
         },
       },
       { new: true }

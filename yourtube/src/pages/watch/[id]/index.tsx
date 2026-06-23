@@ -10,8 +10,8 @@ import React, { useEffect, useMemo, useState } from "react";
 const index = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [videos, setvideo] = useState<any>(null);
-  const [video, setvide] = useState<any>(null);
+  const [videos, setvideos] = useState<any>(null);
+  const [video, setvideo] = useState<any>(null);
   const [loading, setloading] = useState(true);
   useEffect(() => {
     const fetchvideo = async () => {
@@ -19,8 +19,8 @@ const index = () => {
       try {
         const res = await axiosInstance.get("/video/getall");
         const video = res.data?.filter((vid: any) => vid._id === id);
-        setvideo(video[0]);
-        setvide(res.data);
+        setvideos(video[0]);
+        setvideo(res.data);
       } catch (error) {
         console.log(error);
       } finally {
@@ -73,7 +73,7 @@ const index = () => {
           <div className="lg:col-span-2 space-y-4">
             <Videopplayer video={videos} />
             <VideoInfo video={videos} />
-            <Comments videoId={id} />
+            <Comments videoId={videos._id} />
           </div>
           <div className="space-y-4">
             <RelatedVideos videos={video} />

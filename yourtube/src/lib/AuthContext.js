@@ -31,8 +31,41 @@ export const UserProvider = ({ children }) => {
         email: firebaseuser.email,
         name: firebaseuser.displayName,
         image: firebaseuser.photoURL || "https://github.com/shadcn.png",
+        location: city,
       };
       const response = await axiosInstance.post("/user/login", payload);
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          try {
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+            );
+            const data = await res.json();
+            const city =
+              data.address.city ||
+              data.address.town ||
+              data.address.village ||
+              "Unknown";
+            login({
+              ...response.data.result,
+              location: city,
+            });
+          } catch (err) {
+            console.error(err);
+            login({
+              ...response.data.result,
+              location: "Unknown",
+            });
+          }
+        },
+        () => {
+          login({
+            ...response.data.result,
+            location: "Unknown",
+          });
+        },
+      );
       login(response.data.result);
     } catch (error) {
       console.error(error);

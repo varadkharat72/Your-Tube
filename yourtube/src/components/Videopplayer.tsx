@@ -24,7 +24,7 @@ export default function VideoPlayer({ video }: VideoPlayerProps) {
       >
         <source
           src={`${process.env.BACKEND_URL}/${video?.filepath}`}
-          type="video/mp4"
+          type="/video/mp4"
         />
         Your browser does not support the video tag.
       </video>

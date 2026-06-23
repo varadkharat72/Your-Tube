@@ -21,6 +21,7 @@ const VideoInfo = ({ video }: any) => {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const { user } = useUser();
   const [isWatchLater, setIsWatchLater] = useState(false);
+  const [isDownload, setIsDownload] = useState(false);
 
   // const user: any = {
   //   id: "1",
@@ -74,20 +75,6 @@ const VideoInfo = ({ video }: any) => {
       console.log(error);
     }
   };
-  const handleWatchLater = async () => {
-    try {
-      const res = await axiosInstance.post(`/watch/${video._id}`, {
-        userId: user?._id,
-      });
-      if (res.data.watchlater) {
-        setIsWatchLater(!isWatchLater);
-      } else {
-        setIsWatchLater(false);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const handleDislike = async () => {
     if (!user) return;
     try {
@@ -111,6 +98,21 @@ const VideoInfo = ({ video }: any) => {
       console.log(error);
     }
   };
+  const handleWatchLater = async () => {
+    try {
+      const res = await axiosInstance.post(`/watch/${video._id}`, {
+        userId: user?._id,
+      });
+      if (res.data.watchlater) {
+        setIsWatchLater(!isWatchLater);
+      } else {
+        setIsWatchLater(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">{video.videotitle}</h1>
