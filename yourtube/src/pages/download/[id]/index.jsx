@@ -10,8 +10,8 @@ import React, { useEffect, useMemo, useState } from "react";
 const index = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [videos, setvideos] = useState<any>(null);
-  const [video, setvideo] = useState<any>(null);
+  const [videos, setvideos] = useState < any > null;
+  const [video, setvideo] = useState < any > null;
   const [loading, setloading] = useState(true);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const index = () => {
       if (!id || typeof id !== "string") return;
       try {
         const res = await axiosInstance.get("/video/getall");
-        const video = res.data?.filter((vid: any) => vid._id === id);
+        const video = res.data?.filter((vid) => vid._id === id);
         setvideos(video[0]);
         setvideo(res.data);
       } catch (error) {
@@ -43,9 +43,7 @@ const index = () => {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center">
-          <h2 className="text-lg sm:text-xl font-semibold">
-            Video not found
-          </h2>
+          <h2 className="text-lg sm:text-xl font-semibold">Video not found</h2>
         </div>
       </div>
     );
