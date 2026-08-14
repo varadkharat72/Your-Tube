@@ -44,8 +44,7 @@ export const UserProvider = ({ children }) => {
               data?.address?.village ||
               data?.address?.municipality ||
               "Unknown";
-            // const state = data?.address?.state || "Unknown";
-            const state = "Karnataka";
+            const state = data?.address?.state || "Unknown";
             const payload = {
               email: firebaseuser.email,
               name: firebaseuser.displayName,
