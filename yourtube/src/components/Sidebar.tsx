@@ -6,6 +6,9 @@ import {
   ThumbsUp,
   History,
   User,
+  Download,
+  DollarSign,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -13,82 +16,180 @@ import { Button } from "./ui/button";
 import Channeldialogue from "./channeldialogue";
 import { useUser } from "@/lib/AuthContext";
 
-const Sidebar = () => {
+interface SidebarProps {
+  sidebarOpen: boolean;
+  setSidebarOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const { user } = useUser();
-
   const [isdialogeopen, setisdialogeopen] = useState(false);
-  return (
-    <aside className="w-64 bg-white  border-r min-h-screen p-2">
-      <nav className="space-y-1">
-        <Link href="/">
-          <Button variant="ghost" className="w-full justify-start">
-            <Home className="w-5 h-5 mr-3" />
-            Home
-          </Button>
-        </Link>
-        <Link href="/explore">
-          <Button variant="ghost" className="w-full justify-start">
-            <Compass className="w-5 h-5 mr-3" />
-            Explore
-          </Button>
-        </Link>
-        <Link href="/subscriptions">
-          <Button variant="ghost" className="w-full justify-start">
-            <PlaySquare className="w-5 h-5 mr-3" />
-            Subscriptions
-          </Button>
-        </Link>
+  const closeMobileSidebar = () => {
+    if (setSidebarOpen) {
+      setSidebarOpen(false);
+    }
+  };
+  const menuItemClass = ` w-full h-11  px-3 flex items-center  rounded-lg  transition-colors hover:bg-gray-100`;
 
-        {user && (
-          <>
-            <div className="border-t pt-2 mt-2">
-              <Link href="/history">
-                <Button variant="ghost" className="w-full justify-start">
-                  <History className="w-5 h-5 mr-3" />
-                  History
+  return (
+    <>
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 md:hidden"
+          onClick={closeMobileSidebar}
+        />
+      )}
+      <aside
+        className={`  fixed md:sticky top-16  md:top-16  z-50  h-screen  border-r bg-background transition-all duration-300 ease-in-out overflow-y-auto overflow-x-hidden ${sidebarOpen ? "w-64 translate-x-0" : "w-0 -translate-x-full md:w-20 md:translate-x-0"} `}
+      >
+        <div className="flex justify-end p-2 md:hidden">
+          <Button variant="ghost" size="icon" onClick={closeMobileSidebar}>
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+        <nav className="px-2 pb-6 space-y-1">
+          <Link href="/" onClick={closeMobileSidebar}>
+            <Button
+              variant="ghost"
+              className={` ${menuItemClass} ${sidebarOpen ? "justify-start" : "justify-center"} `}
+            >
+              <Home className="w-5 h-5 shrink-0" />
+              <span
+                className={`  whitespace-nowrap  transition-all  duration-200  ${sidebarOpen ? "opacity-100 ml-3" : "opacity-0 w-0 overflow-hidden"} `}
+              >
+                Home
+              </span>
+            </Button>
+          </Link>
+          <Link href="/explore" onClick={closeMobileSidebar}>
+            <Button
+              variant="ghost"
+              className={` ${menuItemClass} ${sidebarOpen ? "justify-start" : "justify-center"} `}
+            >
+              <Compass className="w-5 h-5 shrink-0" />
+              <span
+                className={` whitespace-nowrap transition-all  duration-200  ${sidebarOpen ? "opacity-100 ml-3" : "opacity-0 w-0 overflow-hidden"}`}
+              >
+                Explore
+              </span>
+            </Button>
+          </Link>
+          <Link href="/subscriptions" onClick={closeMobileSidebar}>
+            <Button
+              variant="ghost"
+              className={` ${menuItemClass}  ${sidebarOpen ? "justify-start" : "justify-center"} `}
+            >
+              <PlaySquare className="w-5 h-5 shrink-0" />
+              <span
+                className={` whitespace-nowrap  transition-all duration-200  ${sidebarOpen ? "opacity-100 ml-3" : "opacity-0 w-0 overflow-hidden"} `}
+              >
+                Subscriptions
+              </span>
+            </Button>
+          </Link>
+          {user && (
+            <div className="border-t mt-3 pt-3 space-y-1">
+              <Link href="/history" onClick={closeMobileSidebar}>
+                <Button
+                  variant="ghost"
+                  className={` ${menuItemClass}  ${sidebarOpen ? "justify-start" : "justify-center"} `}
+                >
+                  <History className="w-5 h-5 shrink-0" />
+                  <span
+                    className={`  whitespace-nowrap  transition-all  duration-200  ${sidebarOpen ? "opacity-100 ml-3" : "opacity-0 w-0 overflow-hidden"}  `}
+                  >
+                    History
+                  </span>
                 </Button>
               </Link>
-              <Link href="/liked">
-                <Button variant="ghost" className="w-full justify-start">
-                  <ThumbsUp className="w-5 h-5 mr-3" />
-                  Liked videos
+              <Link href="/liked" onClick={closeMobileSidebar}>
+                <Button
+                  variant="ghost"
+                  className={`  ${menuItemClass} ${sidebarOpen ? "justify-start" : "justify-center"} `}
+                >
+                  <ThumbsUp className="w-5 h-5 shrink-0" />
+                  <span
+                    className={`  whitespace-nowrap transition-all duration-200 ${sidebarOpen ? "opacity-100 ml-3" : "opacity-0 w-0 overflow-hidden"} `}
+                  >
+                    Liked videos
+                  </span>
                 </Button>
               </Link>
-              <Link href="/watch-later">
-                <Button variant="ghost" className="w-full justify-start">
-                  <Clock className="w-5 h-5 mr-3" />
-                  Watch later
+              <Link href="/watch-later" onClick={closeMobileSidebar}>
+                <Button
+                  variant="ghost"
+                  className={`  ${menuItemClass} ${sidebarOpen ? "justify-start" : "justify-center"}`}
+                >
+                  <Clock className="w-5 h-5 shrink-0" />
+                  <span
+                    className={`  whitespace-nowrap  transition-all  duration-200  ${sidebarOpen ? "opacity-100 ml-3" : "opacity-0 w-0 overflow-hidden"}  `}
+                  >
+                    Watch later
+                  </span>
+                </Button>
+              </Link>
+              <Link href="/download-content" onClick={closeMobileSidebar}>
+                <Button
+                  variant="ghost"
+                  className={`  ${menuItemClass}  ${sidebarOpen ? "justify-start" : "justify-center"} `}
+                >
+                  <Download className="w-5 h-5 shrink-0" />
+                  <span
+                    className={`  whitespace-nowrap  transition-all duration-200 ${sidebarOpen ? "opacity-100 ml-3" : "opacity-0 w-0 overflow-hidden"}`}
+                  >
+                    Download
+                  </span>
+                </Button>
+              </Link>
+              <Link href="/premium" onClick={closeMobileSidebar}>
+                <Button
+                  variant="ghost"
+                  className={`  ${menuItemClass} ${sidebarOpen ? "justify-start" : "justify-center"} `}
+                >
+                  <DollarSign className="w-5 h-5 shrink-0" />
+                  <span
+                    className={` whitespace-nowrap  transition-all duration-200 ${sidebarOpen ? "opacity-100 ml-3" : "opacity-0 w-0 overflow-hidden"} `}
+                  >
+                    Premium
+                  </span>
                 </Button>
               </Link>
               {user?.channelname ? (
-                <Link href={`/channel/${user.id}`}>
-                  <Button variant="ghost" className="w-full justify-start">
-                    <User className="w-5 h-5 mr-3" />
-                    Your channel
+                <Link href={`/channel/${user.id}`} onClick={closeMobileSidebar}>
+                  <Button
+                    variant="ghost"
+                    className={` ${menuItemClass}  ${sidebarOpen ? "justify-start" : "justify-center"}`}
+                  >
+                    <User className="w-5 h-5 shrink-0" />
+                    <span
+                      className={`whitespace-nowrap transition-all duration-200 ${sidebarOpen ? "opacity-100 ml-3" : "opacity-0 w-0 overflow-hidden"} `}
+                    >
+                      Your channel
+                    </span>
                   </Button>
                 </Link>
               ) : (
-                <div className="px-2 py-1.5">
+                <div className="px-1 pt-2">
                   <Button
                     variant="secondary"
                     size="sm"
-                    className="w-full"
+                    className="w-full whitespace-nowrap overflow-hidden"
                     onClick={() => setisdialogeopen(true)}
                   >
-                    Create Channel
+                    {sidebarOpen ? "Create Channel" : "+"}
                   </Button>
                 </div>
               )}
             </div>
-          </>
-        )}
-      </nav>
-      <Channeldialogue
-        isopen={isdialogeopen}
-        onclose={() => setisdialogeopen(false)}
-        mode="create"
-      />
-    </aside>
+          )}
+        </nav>
+        <Channeldialogue
+          isopen={isdialogeopen}
+          onclose={() => setisdialogeopen(false)}
+          mode="create"
+        />
+      </aside>
+    </>
   );
 };
 

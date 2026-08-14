@@ -22,8 +22,6 @@ const Channeldialogue = ({ isopen, onclose, channeldata, mode }: any) => {
     description: "",
   });
   const [isSubmitting, setisSubmitting] = useState(false);
-
-  // FIX 3: Added all dependencies — channeldata, mode, user
   useEffect(() => {
     if (channeldata && mode === "edit") {
       setFormData({
@@ -39,56 +37,51 @@ const Channeldialogue = ({ isopen, onclose, channeldata, mode }: any) => {
   }, [channeldata, mode, user]);
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handlesubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    // FIX 4: Guard against null user
     if (!user?._id) return;
-
-    // FIX 1: Set isSubmitting true before request, false after
     setisSubmitting(true);
-
-    // FIX 2: Wrap in try/catch to handle API errors gracefully
     try {
       const payload = {
         channelname: formData.name,
         description: formData.description,
       };
-
       const response = await axiosInstance.patch(
         `/user/update/${user._id}`,
-        payload
+        payload,
       );
-
       login(response?.data);
       router.push(`/channel/${user._id}`);
-      setFormData({ name: "", description: "" });
+      setFormData({
+        name: "",
+        description: "",
+      });
       onclose();
     } catch (error) {
       console.error("Failed to save channel:", error);
     } finally {
-      // FIX 1: Always reset submitting state
       setisSubmitting(false);
     }
   };
 
   return (
     <Dialog open={isopen} onOpenChange={onclose}>
-      <DialogContent className="sm:max-w-md md:max-w-lg">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-md sm:max-w-md md:max-w-lg max-h-[90vh] overflow-y-auto rounded-lg p-4 sm:p-6 ">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">
             {mode === "create" ? "Create your channel" : "Edit your channel"}
           </DialogTitle>
         </DialogHeader>
-
-        <form onSubmit={handlesubmit} className="space-y-6">
-          {/* Channel Name */}
+        <form onSubmit={handlesubmit} className="space-y-5 sm:space-y-6">
           <div className="space-y-2">
             <Label htmlFor="name">Channel Name</Label>
             <Input
@@ -96,10 +89,10 @@ const Channeldialogue = ({ isopen, onclose, channeldata, mode }: any) => {
               name="name"
               value={formData.name}
               onChange={handleChange}
+              className="w-full"
+              placeholder="Enter channel name"
             />
           </div>
-
-          {/* Channel Description */}
           <div className="space-y-2">
             <Label htmlFor="description">Channel Description</Label>
             <Textarea
@@ -109,19 +102,28 @@ const Channeldialogue = ({ isopen, onclose, channeldata, mode }: any) => {
               onChange={handleChange}
               rows={4}
               placeholder="Tell viewers about your channel..."
+              className=" w-full min-h-[100px] resize-y "
             />
           </div>
-
-          <DialogFooter className="flex justify-between sm:justify-between">
-            <Button type="button" variant="outline" onClick={onclose}>
+          <DialogFooter className=" flex flex-col-reverse gap-2 sm:flex-row sm:justify-between sm:gap-0 ">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onclose}
+              className=" w-full sm:w-auto "
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className=" w-full sm:w-auto "
+            >
               {isSubmitting
                 ? "Saving..."
                 : mode === "create"
-                ? "Create Channel"
-                : "Save Changes"}
+                  ? "Create Channel"
+                  : "Save Changes"}
             </Button>
           </DialogFooter>
         </form>

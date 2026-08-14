@@ -2,15 +2,16 @@ import SearchResult from "@/components/SearchResult";
 import { useRouter } from "next/router";
 import React, { Suspense } from "react";
 
-const index = () => {
+const Index = () => {
   const router = useRouter();
   const { q } = router.query;
+
   return (
-    <div className="flex-1 p-4">
-      <div className="max-w-6xl">
+    <main className="flex-1 w-full px-3 py-4 sm:px-5 sm:py-6 lg:px-6">
+      <div className="w-full max-w-6xl mx-auto">
         {q && (
-          <div className="mb-6">
-            <h1 className="text-xl font-medium mb-4">
+          <div className="mb-4 sm:mb-6">
+            <h1 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4 break-words">
               Search results for "{q}"
             </h1>
           </div>
@@ -19,8 +20,8 @@ const index = () => {
           <SearchResult query={q || ""} />
         </Suspense>
       </div>
-    </div>
+    </main>
   );
 };
 
-export default index;
+export default Index;

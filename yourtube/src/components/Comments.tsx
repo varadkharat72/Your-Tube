@@ -31,28 +31,6 @@ const Comment = ({ videoId }: { videoId: string }) => {
   const [loading, setLoading] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
 
-  const fetchedComments = [
-    {
-      _id: "1",
-      userid: "1",
-      commentbody: "Great platform! Really enjoyed commenting here.",
-      usercommented: "John Doe",
-      userlocation: "Dehli NCR",
-      commentedon: new Date(Date.now() - 3600000).toISOString(),
-      likes: 5,
-      dislikes: 1,
-    },
-    {
-      _id: "2",
-      userid: "2",
-      commentbody: "नमस्ते दुनिया! यह एक टिप्पणी है।",
-      usercommented: "Jane Smith",
-      userlocation: "Mumbai, Maharshtra",
-      commentedon: new Date(Date.now() - 7200000).toISOString(),
-      likes: 3,
-      dislikes: 0,
-    },
-  ];
   useEffect(() => {
     loadComments();
   }, []);
@@ -73,7 +51,6 @@ const Comment = ({ videoId }: { videoId: string }) => {
 
   const handleSubmitComment = async () => {
     if (!user || !newComment.trim()) return;
-
     const specialCharacter = /[!@#$%^&*(),.?":{}|<>]/;
     if (specialCharacter.test(newComment)) {
       alert("Special characters are not allowed");
@@ -162,7 +139,6 @@ const Comment = ({ videoId }: { videoId: string }) => {
             likedByUser: false,
           };
         }
-
         return {
           ...comment,
           likes: comment.likes + 1,
@@ -191,7 +167,6 @@ const Comment = ({ videoId }: { videoId: string }) => {
             dislikedByUser: false,
           };
         }
-
         return {
           ...comment,
           dislikes: comment.dislikes + 1,
@@ -205,14 +180,11 @@ const Comment = ({ videoId }: { videoId: string }) => {
 
   const handleTranslate = async (id: string) => {
     const comment = comments.find((c) => c._id === id);
-
     if (!comment) return;
-
     try {
       const res = await axiosInstance.post("/comment/translate", {
         text: comment.commentbody,
       });
-
       setComments((prev) =>
         prev.map((c) =>
           c._id === id
@@ -228,6 +200,7 @@ const Comment = ({ videoId }: { videoId: string }) => {
       console.log(error);
     }
   };
+
   return (
     <div className="space-y-6 p-4">
       <h2 className="text-2xl font-semibold">{comments.length} Comments</h2>
@@ -276,7 +249,7 @@ const Comment = ({ videoId }: { videoId: string }) => {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <div className="bg-gray-100 p-4 rounded-lg">
+                <div className=" p-4 rounded-lg">
                   <div className="flex justify-between">
                     <span className="font-medium text-sm ">
                       {comment.usercommented} • {comment.userlocation}
