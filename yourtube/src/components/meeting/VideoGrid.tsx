@@ -42,7 +42,9 @@ export default function VideoGrid({
     <div
       className={` grid ${columns} gap-2 sm:gap-3  w-full h-full min-h-0 min-w-0 overflow-hidden  place-content-center  auto-rows-fr `}
     >
-      {hasScreen && <ScreenCard stream={screenStream} name={screenName} />}
+      {hasScreen && (
+        <ScreenCard stream={screenStream ?? null} name={screenName} />
+      )}
       <VideoCard
         stream={localStream}
         name="You"
