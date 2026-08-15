@@ -79,22 +79,22 @@ export const verifyPayment = async (req, res) => {
     expiry.setMonth(expiry.getMonth() + 1);
     user.planExpiry = expiry;
     await user.save();
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    await transporter({
+      from: process.env.EMAIL_FROM,
       to: user.email,
       subject: "YourTube Premium Subscription Activated",
       html: `
-        <h2>Payment Successful ✅</h2>
-        <p>Hello <b>${user.name}</b>,</p>
-        <p>Your <b>${plan}</b> Premium subscription has been activated successfully.</p>
-        <hr>
-        <h3>Invoice</h3>
-        <p><b>Plan:</b> ${plan}</p>
-        <p><b>Payment ID:</b> ${razorpay_payment_id}</p>
-        <p><b>Date:</b> ${new Date().toLocaleString()}</p>
-        <hr>
-        <p>Thank you for choosing <b>YourTube Premium</b>.</p>
-      `,
+            <h2>Payment Successful ✅</h2>
+            <p>Hello <b>${user.name}</b>,</p>
+            <p>Your <b>${plan}</b> Premium subscription has been activated successfully. </p>
+            <hr>
+            <h3>Invoice</h3>
+            <p> <b>Plan:</b> ${plan} </p>
+            <p> <b>Payment ID:</b> ${razorpay_payment_id} </p>
+            <p> <b>Date:</b> ${new Date().toLocaleString()} </p>
+            <hr>
+            <p>Thank you for choosing <b>YourTube Premium</b>. </p>
+  `,
     });
     return res.status(200).json({
       success: true,
@@ -141,7 +141,7 @@ export const cancelSubscription = async (req, res) => {
         premium: false,
         planExpiry: null,
       },
-      { new: true }
+      { new: true },
     );
     return res.status(200).json({
       success: true,

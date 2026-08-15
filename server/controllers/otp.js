@@ -24,37 +24,20 @@ export const sendOtp = async (req, res) => {
       user.otp = otp;
       user.otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
       await user.save();
-      const mailResult = await transporter.sendMail({
-        from: process.env.EMAIL_USER,
+      const mailResult = await transporter({
+        from: process.env.EMAIL_FROM,
         to: user.email,
         subject: "YourTube OTP Verification",
         text: `Your YourTube verification OTP is ${otp}. This OTP expires in 5 minutes.`,
         html: `
-          <div style="
-            font-family: Arial, sans-serif;
-            max-width: 500px;
-            margin: auto;
-            padding: 30px;
-          ">
-            <h2>YourTube Verification</h2>
-            <p>Your verification OTP is:</p>
-            <h1 style="
-              letter-spacing: 8px;
-              font-size: 32px;
-            ">
-              ${otp}
-            </h1>
-
-            <p>
-              This OTP expires in 5 minutes.
-            </p>
-
-            <p>
-              If you did not request this OTP,
-              you can ignore this email.
-            </p>
-          </div>
-        `,
+              <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 30px; ">
+                  <h2>YourTube Verification</h2>
+                  <p>Your verification OTP is:</p>
+                  <h1 style=" letter-spacing: 8px; font-size: 32px;"> ${otp} </h1>
+                  <p>This OTP expires in 5 minutes.</p>
+                  <p> If you did not request this OTP, you can ignore this email. </p>
+              </div>
+  `,
       });
       return res.status(200).json({
         success: true,
