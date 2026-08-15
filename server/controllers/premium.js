@@ -6,41 +6,44 @@ import transporter from "../lib/mailer.js";
 export const createOrder = async (req, res) => {
   try {
     const { userId, plan } = req.body;
+
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
+        success: false,
         message: "User not found",
       });
     }
-    let amount = 0;
-    switch (plan.toLowerCase()) {
-      case "bronze":
-        amount = 1000;
-        break;
-      case "silver":
-        amount = 5000;
-        break;
-      case "gold":
-        amount = 10000;
-        break;
-      default:
-        return res.status(400).json({
-          message: "Invalid plan",
-        });
+    const selectedPlan = plan?.toLowerCase();
+    const planPrices = {
+      bronze: 1000,
+      silver: 5000,
+      gold: 10000,
+    };
+    if (!planPrices[selectedPlan]) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid plan",
+      });
     }
     const options = {
-      amount,
+      amount: planPrices[selectedPlan],
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
+      notes: {
+        userId: userId.toString(),
+        plan: selectedPlan,
+      },
     };
     const razorpay = getRazorpay();
     const order = await razorpay.orders.create(options);
     return res.status(200).json({
       success: true,
       order,
+      plan: selectedPlan,
     });
   } catch (error) {
-    console.log(error);
+    console.error("CREATE ORDER ERROR:", error);
     return res.status(500).json({
       success: false,
       message: "Unable to create order",
@@ -67,13 +70,22 @@ export const verifyPayment = async (req, res) => {
         message: "Payment verification failed",
       });
     }
+    const razorpay = getRazorpay();
+    const order = await razorpay.orders.fetch(razorpay_order_id);
+    const plan = order.notes?.plan?.toLowerCase();
+    if (!plan || !["bronze", "silver", "gold"].includes(plan)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid subscription plan",
+      });
+    }
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
         message: "User not found",
       });
     }
-    user.plan = plan.toLowerCase();
+    user.plan = plan;
     user.premium = true;
     const expiry = new Date();
     expiry.setMonth(expiry.getMonth() + 1);
