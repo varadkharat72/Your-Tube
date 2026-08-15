@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useUser } from "@/lib/AuthContext";
 import axiosInstance from "@/lib/axiosinstance";
-import Script from "next/dist/client/script";
+import Script from "next/script";
 
 export default function PremiumContent() {
   const { user, setUser } = useUser();
@@ -42,11 +42,11 @@ export default function PremiumContent() {
     },
   ];
 
-  const handleUpgrade = async (plan: any) => {
+  const handleUpgrade = async (selectedPlan: any) => {
     try {
       const res = await axiosInstance.post("/premium/create-order", {
         userId: user?._id,
-        plan: plan.name.toLowerCase(),
+        plan: selectedPlan.name.toLowerCase(),
       });
       const order = res.data.order;
       const options = {
@@ -54,26 +54,36 @@ export default function PremiumContent() {
         amount: order.amount,
         currency: order.currency,
         name: "YourTube",
-        description: `${plan.name} Premium Plan`,
+        description: `${selectedPlan.name} Premium Plan`,
         order_id: order.id,
         handler: async function (response: any) {
-          await axiosInstance.post("/premium/verify", {
-            userId: user?._id,
-            plan: plan.name.toLowerCase(),
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-          });
-          alert("Premium Activated");
+          try {
+            const verifyResponse = await axiosInstance.post("/premium/verify", {
+              userId: user?._id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            if (verifyResponse.data.success) {
+              setUser(verifyResponse.data.user);
+              alert(`${verifyResponse.data.plan} Premium Activated`);
+            }
+          } catch (error) {
+            console.error("PAYMENT VERIFICATION ERROR:", error);
+          }
         },
         theme: {
           color: "#FF0000",
         },
       };
+      if (!(window as any).Razorpay) {
+        alert("Razorpay is not loaded yet. Please try again.");
+        return;
+      }
       const razorpay = new (window as any).Razorpay(options);
       razorpay.open();
     } catch (error) {
-      console.log(error);
+      console.error("CREATE PAYMENT ERROR:", error);
     }
   };
   const handleCancelSubscription = async () => {
@@ -86,13 +96,16 @@ export default function PremiumContent() {
 
       alert("Subscription Cancelled");
     } catch (error) {
-      console.log(error);
+      console.error("CANCEL SUBSCRIPTION ERROR:", error);
     }
   };
 
   return (
     <>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="afterInteractive"
+      />
 
       <div className="w-full min-w-0 px-3 sm:px-4 md:px-6 py-4 sm:py-6">
         <div className="flex flex-col gap-5 sm:gap-6">
